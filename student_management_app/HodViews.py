@@ -481,8 +481,12 @@ def edit_student_save(request):
 
 def delete_student(request, student_id):
     student = Students.objects.get(admin=student_id)
+    userid=student.admin_id
+    custuser= CustomUser.objects.get(id=userid)
+    
     try:
         student.delete()
+        custuser.delete()
         messages.success(request, "Student Deleted Successfully.")
         return redirect('manage_student')
     except:
@@ -722,6 +726,7 @@ def admin_get_attendance_dates(request):
 
     # students = Students.objects.filter(course_id=subject_model.course_id, session_year_id=session_model)
     attendance = Attendance.objects.filter(subject_id=subject_model, session_year_id=session_model)
+    print(attendance)
 
     # Only Passing Student Id and Student Name Only
     list_data = []
@@ -733,6 +738,7 @@ def admin_get_attendance_dates(request):
     return JsonResponse(json.dumps(list_data), content_type="application/json", safe=False)
 
 
+
 @csrf_exempt
 def admin_get_attendance_student(request):
     # Getting Values from Ajax POST 'Fetch Student'
@@ -740,7 +746,7 @@ def admin_get_attendance_student(request):
     attendance = Attendance.objects.get(id=attendance_date)
 
     attendance_data = AttendanceReport.objects.filter(attendance_id=attendance)
-    # Only Passing Student Id and Student Name Only
+    # Only Passing Student Id and Student Na, me Only
     list_data = []
 
     for student in attendance_data:

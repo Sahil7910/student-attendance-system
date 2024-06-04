@@ -6,6 +6,10 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
 import json
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from rest_framework.decorators import authentication_classes, permission_classes
 
 
 from student_management_app.models import CustomUser, Staffs, Courses, Subjects, Students, SessionYearModel, Attendance, AttendanceReport, LeaveReportStaff, FeedBackStaffs, StudentResult
@@ -76,7 +80,7 @@ def staff_take_attendance(request):
         "subjects": subjects,
         "session_years": session_years
     }
-    return render(request, "staff_template/take_attendaa    nce_template.html", context)
+    return render(request, "staff_template/take_attendance_template.html", context)
 
 
 def staff_apply_leave(request):
@@ -170,6 +174,8 @@ def save_attendance_data(request):
     attendance_date = request.POST.get("attendance_date")
     session_year_id = request.POST.get("session_year_id")
 
+    print("studentID:=",student_ids)
+
     subject_model = Subjects.objects.get(id=subject_id)
     session_year_model = SessionYearModel.objects.get(id=session_year_id)
 
@@ -190,7 +196,44 @@ def save_attendance_data(request):
         return HttpResponse("OK")
     except:
         return HttpResponse("Error")
+    
 
+@authentication_classes([])
+@permission_classes([])
+@csrf_exempt
+@api_view(['GET'])
+def stud_attendace(request):
+
+    student_ids = request.GET['student_ids']
+    subject_id = request.GET["subject_id"]
+    attendance_date = request.GET['attendance_date']
+    session_year_id = request.GET['session_year_id']
+       
+    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+
+    subject_model = Subjects.objects.get(id=subject_id)
+    session_year_model = SessionYearModel.objects.get(id=session_year_id)
+
+    json_student = json.loads(student_ids)
+
+    try:
+        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        # First Attendance Data is Saved on Attendance Model
+        attendance = Attendance(subject_id=subject_model, attendance_date=attendance_date, session_year_id=session_year_model)
+        attendance.save()
+
+        print("saved")
+
+        for stud in json_student:
+            # Attendance of Individual Student saved on AttendanceReport Model
+            student = Students.objects.get(admin=stud['id'])
+            print(student)
+            attendance_report = AttendanceReport(student_id=student, attendance_id=attendance, status=stud['status'])
+            attendance_report.save()
+            
+        return  Response("OK",status=status.HTTP_201_CREATED)
+    except:
+           return Response("not created", status=status.HTTP_304_NOT_MODIFIED)
 
 
 
