@@ -1,0 +1,384 @@
+{% extends 'hod_template/base_template.html' %}
+
+{% block page_title %}
+    View Attendance
+{% endblock page_title %}
+
+{% block main_content %}
+
+{% load static %}
+
+<style>
+   
+      .alert{
+        width:80%;
+        
+      }
+</style>
+
+<section class="content">
+        <div class="container-fluid" style="width:104%:margin-right:30%">
+
+          <div class="row">
+            <div class="col-md-12">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                <div class="card-header">
+                    <h3 class="card-title">View Attendance</h3>
+                </div>
+                
+                            {% if messages %}
+                            <div class="form-group">
+                            <div class="col-12">
+                                {% for message in messages %}
+                                {% if message.tags == "error" %}
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                                    {{ message }}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    </div>
+                                {% elif message.tags == "success" %}
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 10px;">
+                                    {{ message }}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                    </div>
+                                {% endif %}
+
+                                
+
+                                {% endfor %}
+                            </div>
+                            </div>
+                            {% endif %}
+
+
+
+
+
+                        
+                <form  action="test_attendance", method="POST">
+                    <div class="card-body">
+                       
+                      {% csrf_token %}
+
+                        <div class="form-group" style="width:30%">
+                            <label>Subject </label>
+                            <select class="form-control" name="subject" id="subject" required>
+                                <option selected="selected" disabled>Select Subject</option>
+                                {% for subject in subjects %}
+                                    <option value="{{ subject.id }}">{{ subject.subject_name }}</option>
+                                {% endfor %}
+                            </select>
+
+                        </div>
+
+                        <div class="form-group" style="width:30%;">
+                            <label>Session Year </label>
+                            <select class="form-control" name="session_year_id" id="session_year_id" required>
+                                <option selected="selected" disabled>Select Session Year</option>
+                                {% for session_year in session_years %}
+                                    <option value="{{ session_year.id }}">{{ session_year.session_start_year }} to {{ session_year.session_end_year }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    
+                   
+                        {% comment %} <div class="row mb-2">
+                            <div class="col">
+                              <div data-mdb-input-init class="form-outline" style="width:40%;">
+                                <label>Year </label>
+                                <select class="form-control" name="session_year_id" id="session_year_id" >
+                                    <option selected="selected" disabled>Select Year</option>
+                                    {% for session_year in session_years %}
+                                        <option value="{{ session_year.id }}">{{ session_year.session_start_year|date:"Y" }}</option>
+                                    {% endfor %}
+                                </select>
+                              </div>
+                            </div>
+
+                            <div class="col" style="margin-right:10%">
+                              <div data-mdb-input-init class="form-outline" style="width:40%;">
+                                <label>Month</label>
+                                <select class="form-control" name="month" id="session_year_id" >
+                                    <option selected="selected" disabled>Select Month</option>
+                                    {% for month in month_list %}
+                                        <option value="{{ session_year.id }}">{{ month }}</option>
+                                    {% endfor %}
+                                </select>
+                              </div>
+                            </div>
+                          </div> {% endcomment %}
+
+
+                   
+                 
+
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary" >Fetch Attendance</button>
+                    </div>
+                  </div>
+                </form>
+
+                
+
+
+                
+                {% if attendance_data%}
+                
+                
+                <div class="table">
+                <table class="table table-bordered" style="margin-left:10px;width:99%">
+                  <thead>
+                    
+                    <tr>
+                      <th style="width:20%">Student Name</th>
+                      {% for date in calendar_data %}
+                      <th style='width:7%'>{{date.monthdates}}</th>
+                       {% endfor %}   
+                    </tr>
+                  </thead>
+
+                  
+                  <tbody>
+                    
+                    {% for students in students  %}
+                    <tr>
+                      <td>{{students.name}}</td>
+                     
+                    {% for attendance in attendance_data  %}
+                      
+                    
+
+                      {% if attendance.name == students.name  and attendance.date|date:'j' == '1'  %}
+                    
+                      <td>{{attendance.status}}</td>
+                      
+                        {%endif %}
+
+                     
+
+                        
+                          
+                      
+                          
+
+
+                        
+
+                   
+                            
+
+{% comment %}           
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '02' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '03' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '04' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '05' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '06' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '07' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '08' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '09' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '10' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '11' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '12' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '13' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '14' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '15' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '16' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '17' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '18' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '19' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '20' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '21' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '22' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '23' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '24' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '25' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '26' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '27' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '28' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '29' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+                            {% if attendance.status == 1 and attendance.date|date:'d' == '30' %}
+                          <td> p</td>
+                            {% else %}
+                          <td>A</td>
+                            {% endif %}
+
+
+                          {% if attendance.date %}
+                         
+                            {% elif attendance.status == 1 and attendance.date|date:'d' == '31' %}
+                            <td> p</td>
+                              {% else %}
+                            <td>A</td>
+                          {% endif %} {% endcomment %}
+                          {%endfor%}
+                      
+                        <tr>
+
+                          
+                       {%endfor%}
+                      
+                  </tbody>
+                  
+                </table>
+            </div>
+            
+            {% endif %}
+
+                    </div>
+
+                 
+
+                    
+
+                </div>
+                <!-- /.card -->
+
+            </div>
+        </div>
+
+    </div><!-- /.container-fluid -->
+  </section>
+
+{% endblock main_content %}

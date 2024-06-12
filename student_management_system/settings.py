@@ -14,7 +14,7 @@ SECRET_KEY = '(i#*06f#keydy_fh17bf=$0f6v)^wr^l7*u4gq42m*sztu#2_m'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*','192.168.1.41']
+ALLOWED_HOSTS = ['*','192.168.1.39', '0.0.0.0']
 
 
 # Application definition
@@ -72,15 +72,25 @@ DATABASES = {
     #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     # }
 
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'schoolmanagement',
+    #     'USER':'root',
+    #     'PASSWORD':'admin',
+    #     'HOST':'localhost',
+    #     'PORT':'3306'
+    # }
+
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'schoolmanagement',
-        'USER':'root',
-        'PASSWORD':'admin',
-        'HOST':'localhost',
-        'PORT':'3306'
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'schoolmanagement', 
+        'USER': 'postgres',
+        'PASSWORD': 'admin',
+        'HOST': '127.0.0.1', 
+        'PORT': '5432',
     }
-}
+    }
+
 
 
 # Password validation
@@ -113,7 +123,8 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+# USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)

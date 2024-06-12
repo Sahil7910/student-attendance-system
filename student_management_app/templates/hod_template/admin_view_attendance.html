@@ -8,6 +8,8 @@
 
 {% load static %}
 
+
+
 <section class="content">
         <div class="container-fluid">
 
@@ -44,8 +46,13 @@
                                 </div>
                                 </div>
                                 {% endif %}
-                            
 
+
+
+
+
+                            
+                    
                         <div class="card-body">
                            
                             <div class="form-group">
@@ -73,6 +80,16 @@
                         <div class="card-footer">
                             <button type="button" class="btn btn-primary" id="fetch_attendance">Fetch Attendance Date</button>
                         </div>
+
+                    </form>
+
+
+
+
+
+
+
+
 
                         <div class="card-footer">
                             <div class="form-group" id="attendance_block" style="display:none;">
@@ -197,15 +214,22 @@
             })
 
             
-            .done(function(response){
+            .done(function(response){ 
                 var json_data=JSON.parse(response);
                 //console.log(json_data)
-                //Displaying Attendance Date Input and Students Attendance
                 var div_data="<div class='form-group'><label>Student Attendance: </label></div>"
+
+                div_data+="<table>";
+                    div_data+=" <tr>";
+                        div_data+="<th>Names</th>";
+                    div_data+="</tr>";
+               div_data+=" </table>";
+
                 div_data+="<div class='form-group'><div class='row'>"
 
                 for(key in json_data)
                 {
+                    
                     div_data+="<div class='col-lg-3'><div class='form-check'>";
 
                     div_data+="<label class='form-check-label'>"+ json_data[key]['name']+" </label> ";

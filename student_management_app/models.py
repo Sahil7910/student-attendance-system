@@ -94,7 +94,10 @@ class AttendanceReport(models.Model):
     status = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=datetime.now())
     updated_at = models.DateTimeField(auto_now=True)
+    subject_id = models.ForeignKey(Subjects, on_delete=models.DO_NOTHING, null=True)
+    session_year_id = models.ForeignKey(SessionYearModel, on_delete=models.CASCADE, null=True)
     objects = models.Manager()
+
 
 
 class LeaveReportStudent(models.Model):

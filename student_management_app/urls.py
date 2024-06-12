@@ -58,6 +58,7 @@ urlpatterns = [
     path('admin_get_attendance_student/', HodViews.admin_get_attendance_student, name="admin_get_attendance_student"),
     path('admin_profile/', HodViews.admin_profile, name="admin_profile"),
     path('admin_profile_update/', HodViews.admin_profile_update, name="admin_profile_update"),
+    path('test_attendance', HodViews.test_attendance, name="test_attendance"),
     
 
 
@@ -92,4 +93,8 @@ urlpatterns = [
     path('student_profile/', StudentViews.student_profile, name="student_profile"),
     path('student_profile_update/', StudentViews.student_profile_update, name="student_profile_update"),
     path('student_view_result/', StudentViews.student_view_result, name="student_view_result"),
+
+    # URLS for Device
+    path('checkin/', StudentViews.check_in, name="checkin"),
+
 ]

@@ -5,7 +5,13 @@ from django.core.files.storage import FileSystemStorage #To upload Profile Pictu
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
+from django.db.models import Count
 import json
+from django.core.exceptions import ValidationError
+from datetime import datetime,date
+from calendar import Calendar
+from django.db.models import Q
+from django.core.exceptions import ObjectDoesNotExist
 
 from student_management_app.models import CustomUser, Staffs, Courses, Subjects, Students, SessionYearModel, FeedBackStudent, FeedBackStaffs, LeaveReportStudent, LeaveReportStaff, Attendance, AttendanceReport
 from .forms import AddStudentForm, EditStudentForm
@@ -725,7 +731,11 @@ def admin_get_attendance_dates(request):
     session_model = SessionYearModel.objects.get(id=session_year)
 
     # students = Students.objects.filter(course_id=subject_model.course_id, session_year_id=session_model)
-    attendance = Attendance.objects.filter(subject_id=subject_model, session_year_id=session_model)
+    # attendance = Attendance.objects.filter(subject_id=subject_model, session_year_id=session_model)
+    attendance = Attendance.objects.filter(subject_id=subject_model, session_year_id=session_model).order_by('attendance_date')
+    # attendance = Attendance.objects.all().order_by('attendance_date')
+
+    # attendance= Attendance.objects.distinct("attendance_date")
     print(attendance)
 
     # Only Passing Student Id and Student Name Only
@@ -797,4 +807,102 @@ def student_profile(requtest):
     pass
 
 
+def test_attendance(request):
+    subjects = Subjects.objects.all()
+    session_years = SessionYearModel.objects.all()
 
+    month_list=['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+
+    context = {
+        "subjects": subjects,
+        "session_years": session_years,
+        "month_list":month_list
+        }   
+    
+    current_datetime = datetime.now()
+    current_year = current_datetime.year
+    current_month = current_datetime.month
+    today = date.today()
+    
+    
+    if request.method == "POST": 
+            try: 
+                sub=request.POST['subject']
+                session=request.POST['session_year_id']
+
+                attendanceID= Attendance.objects.filter(subject_id=sub, session_year_id=session)
+                
+                # totalStudents=Students.objects.filter(course_id_id=sub, session_year_id_id=session)
+                # print("totalStudentss",totalStudents)
+
+                # presentStudents=AttendanceReport.objects.filter(subject_id=sub, session_year_id=session,status=1,attendance_id=7).count()
+                # print("present",totalStudents)
+
+                # absentStudents=totalStudents - presentStudents
+                # print(absentStudents)
+
+                # Students=Students.objects.filter(course_id_id=sub, session_year_id_id=session)
+                
+                students=Students.objects.filter(course_id_id=sub, session_year_id_id=session)
+               
+
+                students_data=[]
+                for students in students:
+                    data_small={ "name":students.admin.first_name+" "+students.admin.last_name}
+                    students_data.append(data_small)
+                    print("studentsdata",students_data)
+
+
+                ID_data=[]
+                for id in attendanceID:
+                    attendance_data = AttendanceReport.objects.filter(subject_id=sub, session_year_id=session, attendance_id=id)
+                    
+                    for student in attendance_data:
+                        if student.status == True:
+                            status="p"
+                        else:
+                            status="A"
+                        data_small={"id":student.student_id.admin.id, "name":student.student_id.admin.first_name+" "+student.student_id.admin.last_name, "status":status  ,"date":student.attendance_id.attendance_date }
+                       
+                        ID_data.append(data_small)
+
+                    # ID_data.append(attendance_data)
+                    # last_data=ID_data[-1]
+
+                    print("IDData", ID_data)
+                    
+                
+
+                obj = Calendar() 
+                days = []
+                for day in obj.itermonthdays(current_year, current_month):
+                    if day != 0:
+                      dates= {"monthdates":day}
+                      days.append(dates)
+                    
+
+                    
+
+                    
+                list_data=[]
+                for student in attendance_data:
+            
+                     data_small={"id":student.student_id.admin.id, "name":student.student_id.admin.first_name+" "+student.student_id.admin.last_name, "status":student.status, "date":student.attendance_id.attendance_date}
+                     list_data.append(data_small)
+                     print("listdata",list_data)
+
+
+            except :  
+                    messages.error(request, "Something Went Wrong...")
+                    return render(request, 'hod_template/attreport.html',context)
+            
+            
+            return render(request, 'hod_template/attreport.html',{"subjects": subjects,"session_years": session_years,"students":students_data,"attendance_data":ID_data,'calendar_data':days,'curr_date':today})               
+    else:
+        return render(request, 'hod_template/attreport.html',context)
+
+         
+               
+    
+            
+            

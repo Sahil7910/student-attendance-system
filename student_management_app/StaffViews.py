@@ -191,7 +191,7 @@ def save_attendance_data(request):
         for stud in json_student:
             # Attendance of Individual Student saved on AttendanceReport Model
             student = Students.objects.get(admin=stud['id'])
-            attendance_report = AttendanceReport(student_id=student, attendance_id=attendance, status=stud['status'])
+            attendance_report = AttendanceReport(student_id=student, attendance_id=attendance, status=stud['status'],subject_id=attendance.subject_id,session_year_id=attendance.session_year_id)
             attendance_report.save()
         return HttpResponse("OK")
     except:

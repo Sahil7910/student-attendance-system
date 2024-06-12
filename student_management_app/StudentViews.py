@@ -196,5 +196,8 @@ def student_view_result(request):
 
 
 
+# ---------------------------------
 
+def check_in(request):
+    return  HttpResponse("success")
 

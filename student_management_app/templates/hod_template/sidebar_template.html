@@ -154,6 +154,16 @@
             </li>
 
             <li class="nav-item">
+              {% url 'test_attendance' as test_attendance %}
+              <a href="{{ test_attendance }}" class="nav-link {% if request.path == test_attendance %} active {% endif %}">
+                <i class="nav-icon fas fa-calendar-alt"></i>
+                <p>
+                  test Attendance
+                </p>
+              </a>
+            </li>
+
+            <li class="nav-item">
               {% url 'student_feedback_message' as student_feedback_message %}
               <a href="{{ student_feedback_message }}" class="nav-link {% if request.path == student_feedback_message %} active {% endif %}">
                 <i class="nav-icon fas fa-th"></i>
