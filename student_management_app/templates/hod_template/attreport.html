@@ -150,15 +150,26 @@
                      
                     {% for attendance in attendance_data  %}
                       
+                    {% comment %} {% if attendance.name == students.name and attendance.status == 'p' %}
+                      <td>P</td>
+                     {% elif attendance.date %}
+                     <td>--</td>
+                    {% endif %} {% endcomment %}
+
                     
 
-                      {% if attendance.name == students.name  and attendance.date|date:'j' == '1'  %}
+                      {% if attendance.name == students.name   %}
                     
                       <td>{{attendance.status}}</td>
                       
-                        {%endif %}
+                        {%endif %}  
 
-                     
+                        {% comment %} {% if attendance.name == students.name and attendance.date|date:'j' == '1'  %}
+                    
+                        <td>{{attendance.status}}</td>
+                        
+                          {%endif %}  {% endcomment %}
+                        
 
                         
                           
