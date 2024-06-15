@@ -45,12 +45,12 @@
                             <h3 class="card-title">Course Details</h3>
 
                             <div class="card-tools">
-                            <div class="input-group input-group-sm" style="width: 150px;">
-                                <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+                                <div class="input-group input-group-sm" style="width: 300px;margin-right:150px">
+                                    <input class="form-control" id="myInput" type="text" placeholder="Search..">
 
-                                <div class="input-group-append">
+                                {% comment %} <div class="input-group-append">
                                 <button type="submit" class="btn btn-default"><i class="fas fa-search"></i></button>
-                                </div>
+                                </div> {% endcomment %}
                             </div>
                             </div>
                         </div>
@@ -66,7 +66,7 @@
                                 <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="myTable">
                                 {% for course in courses %}
                                 <tr>
                                 <td>{{ course.id }}</td>
@@ -94,3 +94,17 @@
       </section>
 
   {% endblock main_content %}
+
+  {% block custom_js %}
+
+<script>
+    $(document).ready(function(){
+        $("#myInput").on("keyup", function() {
+          var value = $(this).val().toLowerCase();
+          $("#myTable tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+          });
+        });
+      });
+</script>
+{% endblock custom_js %}

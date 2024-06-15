@@ -59,6 +59,13 @@ urlpatterns = [
     path('admin_profile/', HodViews.admin_profile, name="admin_profile"),
     path('admin_profile_update/', HodViews.admin_profile_update, name="admin_profile_update"),
     path('test_attendance', HodViews.test_attendance, name="test_attendance"),
+    path('add_holidays', HodViews.add_holidays, name="add_holidays"),
+    path('manage_holidays', HodViews.manage_holidays, name="manage_holidays"),
+    path('delete_holiday/<holiday_id>/', HodViews.delete_holiday, name="delete_holiday"),
+    path('edit_holiday/<holiday_id>/', HodViews.edit_holiday, name="edit_holiday"),
+
+
+
     
 
 

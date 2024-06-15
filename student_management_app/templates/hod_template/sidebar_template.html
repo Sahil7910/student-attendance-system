@@ -142,6 +142,26 @@
               </a>
             </li>
 
+            <li class="nav-item">
+              {% url 'add_holidays' as add_holidays %}
+              <a href="{{ add_holidays }}" class="nav-link {% if request.path == add_holidays %} active {% endif %}">
+                <i class="nav-icon fas fa-calendar-alt"></i>
+                <p>
+                  Add Holidays
+                </p>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              {% url 'manage_holidays' as manage_holidays %}
+              <a href="{{ manage_holidays }}" class="nav-link {% if request.path == manage_holidays %} active {% endif %}">
+                <i class="nav-icon fas fa-calendar-alt"></i>
+                <p>
+                  Manage Holidays
+                </p>
+              </a>
+            </li>
+
 
             <li class="nav-item">
               {% url 'admin_view_attendance' as admin_view_attendance %}

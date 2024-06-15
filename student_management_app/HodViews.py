@@ -6,13 +6,14 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.core import serializers
 from django.db.models import Count
+from .models import Holidays
+
 import json
 from django.core.exceptions import ValidationError
 from datetime import datetime,date
 from calendar import Calendar
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
-
 from student_management_app.models import CustomUser, Staffs, Courses, Subjects, Students, SessionYearModel, FeedBackStudent, FeedBackStaffs, LeaveReportStudent, LeaveReportStaff, Attendance, AttendanceReport
 from .forms import AddStudentForm, EditStudentForm
 
@@ -390,9 +391,16 @@ def add_student_save(request):
 
 def manage_student(request):
     students = Students.objects.all()
+    # filter = studentFilter(request.GET, queryset=students)
+    # students= filter.qs
     context = {
-        "students": students
+        "students": students,
+        
     }
+
+    
+
+    return render(request, 'hod_template/manage_student_template.html',context)
     return render(request, 'hod_template/manage_student_template.html', context)
 
 
@@ -487,8 +495,11 @@ def edit_student_save(request):
 
 def delete_student(request, student_id):
     student = Students.objects.get(admin=student_id)
+   
     userid=student.admin_id
+    
     custuser= CustomUser.objects.get(id=userid)
+    
     
     try:
         student.delete()
@@ -811,12 +822,11 @@ def test_attendance(request):
     subjects = Subjects.objects.all()
     session_years = SessionYearModel.objects.all()
 
-    month_list=['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-
+    
     context = {
         "subjects": subjects,
         "session_years": session_years,
-        "month_list":month_list
+        
         }   
     
     current_datetime = datetime.now()
@@ -824,11 +834,15 @@ def test_attendance(request):
     current_month = current_datetime.month
     today = date.today()
     
+   
     
     if request.method == "POST": 
             try: 
                 sub=request.POST['subject']
                 session=request.POST['session_year_id']
+
+                total_d_present=AttendanceReport.objects.filter(subject_id=sub, session_year_id=session, status=1).count()
+                print(total_d_present)
 
                 attendanceID= Attendance.objects.filter(subject_id=sub, session_year_id=session)
                 
@@ -850,7 +864,7 @@ def test_attendance(request):
                 for students in students:
                     data_small={ "name":students.admin.first_name+" "+students.admin.last_name}
                     students_data.append(data_small)
-                    print("studentsdata",students_data)
+                    # print("studentsdata",students_data)
 
 
                 ID_data=[]
@@ -858,10 +872,13 @@ def test_attendance(request):
                     attendance_data = AttendanceReport.objects.filter(subject_id=sub, session_year_id=session, attendance_id=id)
                     
                     for student in attendance_data:
-                        if student.status == True:
+                        if student.status == 1:
                             status="p"
-                        else:
+                        elif student.status == 0:
                             status="A"
+                        else :
+                            status="Holiday"
+
                         data_small={"id":student.student_id.admin.id, "name":student.student_id.admin.first_name+" "+student.student_id.admin.last_name, "status":status  ,"date":student.attendance_id.attendance_date }
                        
                         ID_data.append(data_small)
@@ -869,7 +886,7 @@ def test_attendance(request):
                     # ID_data.append(attendance_data)
                     # last_data=ID_data[-1]
 
-                    print("IDData", ID_data)
+                    # print("IDData", ID_data)
                     
                 
 
@@ -879,6 +896,7 @@ def test_attendance(request):
                     if day != 0:
                       dates= {"monthdates":day}
                       days.append(dates)
+                    #   print(dates )
                     
 
                     
@@ -889,9 +907,7 @@ def test_attendance(request):
             
                      data_small={"id":student.student_id.admin.id, "name":student.student_id.admin.first_name+" "+student.student_id.admin.last_name, "status":student.status, "date":student.attendance_id.attendance_date}
                      list_data.append(data_small)
-                     print("listdata",list_data)
-
-
+                    #  print("listdata",list_data)
             except :  
                     messages.error(request, "Something Went Wrong...")
                     return render(request, 'hod_template/attreport.html',context)
@@ -901,8 +917,83 @@ def test_attendance(request):
     else:
         return render(request, 'hod_template/attreport.html',context)
 
+
+def add_holidays(request):
+
+
+
+    if request.method == "POST":
+        holiday_date=request.POST['date']
+        description=request.POST['description']
+
+        print(holiday_date,"",description)
+
+        try:
+
+            holidays=Holidays(Date=holiday_date,Description=description)
+
+            holidays.save()
+            messages.success(request, "Holiday added Successfully")
+            return render(request,'hod_template/add_holidays.html') 
+        except:
+                messages.error(request, "Failed to add holiday")   
+                return render(request,'hod_template/add_holidays.html') 
+
+    return render(request,'hod_template/add_holidays.html')  
+
+
+
+
+def manage_holidays(request):
+
+    holidays=Holidays.objects.all()
+
+    return render(request,'hod_template/manage_holidays.html',{'holidays':holidays})   
+
+
+def delete_holiday(request, holiday_id):
+    holiday = Holidays.objects.get(id=holiday_id)
+    try:
+        holiday.delete()
+        messages.success(request, "Holiday Deleted Successfully.")
+        return redirect('manage_holidays')
+    except:
+        messages.error(request, "Failed to Delete Subject.")
+        return redirect('manage_holidays')
+    
+
+def edit_holiday(request, holiday_id):
+    holiday = Holidays.objects.get(id=holiday_id)
+   
+    
+    context = {
+        "holiday": holiday,
+    }
+
+    if request.method == "POST":
+
+        holiday_date=request.POST['date']
+        description=request.POST['description']
+
+        try:
+            holiday.Date=holiday_date
+            holiday.Description=description
+        
+            holiday.save()
+            messages.success(request, "Holiday updated Successfully.")
+            return redirect('manage_holidays')
+        except:
+                messages.error(request, "Failed to Update Holiday.")
+                return redirect('manage_holidays')
+        
+
+    return render(request, 'hod_template/edit_holiday.html', context)
+
+
+    
+
+
          
-               
     
             
             

@@ -146,7 +146,8 @@
                     
                     {% for students in students  %}
                     <tr>
-                      <td>{{students.name}}</td>
+                      
+                    <td>{{students.name}}</td>
                      
                     {% for attendance in attendance_data  %}
                       
@@ -158,20 +159,22 @@
 
                     
 
-                      {% if attendance.name == students.name   %}
-                    
+                      {% comment %} {% if attendance.name == students.name   %}
                       <td>{{attendance.status}}</td>
-                      
-                        {%endif %}  
+                        {%endif %}   {% endcomment %}
 
-                        {% comment %} {% if attendance.name == students.name and attendance.date|date:'j' == '1'  %}
-                    
+                      {% comment %} 
+                        {% if attendance.name == students.name and attendance.date|date:'j' == '1'  %}
                         <td>{{attendance.status}}</td>
-                        
-                          {%endif %}  {% endcomment %}
+                          {%endif %}   {% endcomment %}
                         
 
                         
+                          {% if attendance.name == students.name  %}
+                            <td>{{attendance.status}}</td>
+
+                          {% comment %} <td>{{attendance.status}}</td> {% endcomment %}
+                            {%endif %}  
                           
                       
                           
@@ -182,7 +185,7 @@
                    
                             
 
-{% comment %}           
+                        {% comment %}           
                             {% if attendance.status == 1 and attendance.date|date:'d' == '02' %}
                           <td> p</td>
                             {% else %}
@@ -376,6 +379,8 @@
             </div>
             
             {% endif %}
+
+            
 
                     </div>
 

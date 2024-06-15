@@ -10,7 +10,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.decorators import authentication_classes, permission_classes
-
+from datetime import date, timedelta
 
 from student_management_app.models import CustomUser, Staffs, Courses, Subjects, Students, SessionYearModel, Attendance, AttendanceReport, LeaveReportStaff, FeedBackStaffs, StudentResult
 
@@ -165,6 +165,40 @@ def get_students(request):
 
 
 
+# @csrf_exempt
+# def save_attendance_data(request):
+#     # Get Values from Staf Take Attendance form via AJAX (JavaScript)
+#     # Use getlist to access HTML Array/List Input Data
+#     student_ids = request.POST.get("student_ids")
+#     subject_id = request.POST.get("subject_id")
+#     attendance_date = request.POST.get("attendance_date")
+#     session_year_id = request.POST.get("session_year_id")
+
+#     print("studentID:=",student_ids)
+
+#     subject_model = Subjects.objects.get(id=subject_id)
+#     session_year_model = SessionYearModel.objects.get(id=session_year_id)
+
+#     json_student = json.loads(student_ids)
+#     # print(dict_student[0]['id'])
+
+#     # print(student_ids)
+#     try:
+#         # First Attendance Data is Saved on Attendance Model
+#         attendance = Attendance(subject_id=subject_model, attendance_date=attendance_date, session_year_id=session_year_model)
+#         attendance.save()
+
+#         for stud in json_student:
+#             # Attendance of Individual Student saved on AttendanceReport Model
+#             student = Students.objects.get(admin=stud['id'])
+#             attendance_report = AttendanceReport(student_id=student, attendance_id=attendance, status=stud['status'],subject_id=attendance.subject_id,session_year_id=attendance.session_year_id)
+#             attendance_report.save()
+#         return HttpResponse("OK")
+#     except:
+#         return HttpResponse("Error")
+    
+
+
 @csrf_exempt
 def save_attendance_data(request):
     # Get Values from Staf Take Attendance form via AJAX (JavaScript)
@@ -180,19 +214,61 @@ def save_attendance_data(request):
     session_year_model = SessionYearModel.objects.get(id=session_year_id)
 
     json_student = json.loads(student_ids)
-    # print(dict_student[0]['id'])
+    
+    # today = date.today()
 
-    # print(student_ids)
+    # tomorrow = today + timedelta(days=1)
+    # print(tomorrow)
+
+    # if tomorrow.weekday() == 5:
+    #     print("tomorrow is saturday!")
+        
+    #     attendance = Attendance(subject_id=subject_model, attendance_date=tomorrow, session_year_id=session_year_model)
+    #     attendance.save()
+
+    #     for stud in json_student:
+    #         # Attendance of Individual Student saved on AttendanceReport Model
+    #         student = Students.objects.get(admin=stud['id'])
+    #         attendance_report = AttendanceReport(student_id=student, attendance_id=attendance, status=2,subject_id=attendance.subject_id,session_year_id=attendance.session_year_id)
+    #         attendance_report.save()
+
+    # else:
+    #     print("Tomorrow is not saturday.")
+
     try:
-        # First Attendance Data is Saved on Attendance Model
-        attendance = Attendance(subject_id=subject_model, attendance_date=attendance_date, session_year_id=session_year_model)
-        attendance.save()
+        json_student = json.loads(student_ids) 
 
-        for stud in json_student:
+        today = date.today()
+        tomorrow = today + timedelta(days=1)
+        print(tomorrow)
+        print(today)
+
+        if tomorrow.weekday() == 6:
+            print("tomorrow is sunday!")
+            attendance1 = Attendance(subject_id=subject_model, attendance_date=today, session_year_id=session_year_model)
+            attendance1.save()
+            for stud in json_student:
             # Attendance of Individual Student saved on AttendanceReport Model
-            student = Students.objects.get(admin=stud['id'])
-            attendance_report = AttendanceReport(student_id=student, attendance_id=attendance, status=stud['status'],subject_id=attendance.subject_id,session_year_id=attendance.session_year_id)
-            attendance_report.save()
+                student = Students.objects.get(admin=stud['id'])
+                attendance_report1 = AttendanceReport(student_id=student, attendance_id=attendance1, status=stud['status'],subject_id=attendance1.subject_id,session_year_id=attendance1.session_year_id)
+                attendance_report1.save()
+
+            attendance2 = Attendance(subject_id=subject_model, attendance_date=tomorrow, session_year_id=session_year_model)
+            attendance2.save()
+            for stud in json_student:
+                student = Students.objects.get(admin=stud['id'])
+                attendance_report2= AttendanceReport(student_id=student, attendance_id=attendance2, status=2,subject_id=attendance2.subject_id,session_year_id=attendance2.session_year_id)
+                attendance_report2.save()
+        else:
+            print("tomorrow is not sunday")   
+        
+            attendance = Attendance(subject_id=subject_model, attendance_date=today, session_year_id=session_year_model)
+            attendance.save()
+
+            for stud in json_student:
+                student = Students.objects.get(admin=stud['id'])
+                attendance_report = AttendanceReport(student_id=student, attendance_id=attendance, status=stud['status'],subject_id=attendance.subject_id,session_year_id=attendance.session_year_id)
+                attendance_report.save()
         return HttpResponse("OK")
     except:
         return HttpResponse("Error")
